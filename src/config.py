@@ -102,3 +102,9 @@ CHANGE_COLS = ['entries_lag1','entries_diff1','entries_pct_change1',
     'investigation_rate_diff1','investigation_rate_pct_change1','flag_rate_lag1','flag_rate_diff1']
 
 VOLUME_FLAG_COLS = ["is_low_volume", "is_low_volume_50"]
+
+ROLLING_COLS = ["entries_roll7", "entries_roll30", "entries_dev_ratio7", "flag_rate_roll7",
+     "flag_rate_roll30", "flag_rate_dev_ratio7", "investigation_rate_roll7", "investigation_rate_roll30",
+     "investigation_rate_dev_ratio7"]
+
+SEASONAL_COLS = ["entries_trend", "entries_residual", "entries_residual_z"]
