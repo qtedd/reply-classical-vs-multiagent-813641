@@ -1,4 +1,4 @@
-## Preprocessing
+## Data Preparation
 ### Passenger Dataset `TIPOLOGIA_VIAGGIATORE`
 
 Several preprocessing steps were applied to ensure consistency and data quality:
@@ -68,7 +68,6 @@ These capture:
 - passenger volume
 - control intensity
 - flagged outcomes
-- normalized behavioral rates
 
 ---
 
