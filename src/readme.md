@@ -5,7 +5,7 @@ The objective is to identify suspicious patterns in transit flows using both a c
 
 The classical approach combines statistical models and rule-based logic, while the multi-agent system introduces modular and adaptive components. The goal is to compare these approaches in terms of performance, interpretability, and operational suitability.
 
-
+## Classical
 ### Data Preparation
 #### Passenger Dataset `TIPOLOGIA_VIAGGIATORE`
 
@@ -28,7 +28,7 @@ Additionally:
 
 ---
 
-### Cases Dataset `ALLARMI`
+#### Cases Dataset `ALLARMI`
 
 The cases dataset was cleaned with similar principles:
 
@@ -290,6 +290,19 @@ The revised approach ensures that all rule-based signals are derived from pre-in
 making the detection layer fully causal while preserving interpretability.
 
 
+### Airport Specific Classical Report
+The Classical pipeline originally produced a global anomaly report over the full dataset.
+To make the comparison with the Multi-Agent system fair, an additional airport-specific Classical report was added.
+
+The function:
+```python
+run_airport_classical_comparison()
+```
+filters the Classical output to one selected arrival airport.
+
+---
+---
+---
 
 ## Multi-Agent System
 
@@ -360,3 +373,79 @@ This modular structure allows:
 
 ---
 
+### Report Agent
+
+#### Role in the Multi-Agent System
+
+The Report Agent is the final component of the multi-agent anomaly detection workflow. It receives the structured outputs produced by the previous agents and converts them into a clear, human-readable **Transit Anomaly Report**.
+
+The Report Agent acts as an interpretation and communication layer. Its purpose is to explain the detected anomalies in simple operational language, making the results easier to understand for non-technical users such as airport operators, analysts, or decision-makers.
+
+The Report Agent is executed after the following agents:
+
+1. **Data Agent** – filters the data according to the selected airport perimeter.
+2. **Baseline Agent** – builds historical baseline indicators for the selected perimeter.
+3. **Outlier Detection Agent** – identifies anomalous patterns using statistical and machine learning methods.
+4. **Risk Profiling Agent** – assigns a risk level to each flagged pattern.
+5. **Report Agent** – generates the final natural-language anomaly report.
+
+---
+
+#### Input
+
+The Report Agent uses the shared LangGraph state as input. In particular, it reads:
+
+```python
+state["perimeter"]
+state["anomaly_results"]
+state["risk_profile"]
+```
+
+* The Report Agent depends on the quality of the previous agents' outputs.
+If the anomaly detection or risk profiling steps contain errors, the final report may also reflect those errors.
+---
+
+#### Small-Airport Handling
+
+Some airports have very few route-day observations. In the updated implementation, the pipeline no longer crashes when the selected airport does not contain enough data.
+
+A minimum threshold of 10 route-day observations is used before running anomaly detection.
+
+If the selected airport has fewer than 10 observations, the system returns a clear report instead of raising an error, for example:
+
+```text
+Only X rows — not enough for detection.
+```
+
+---
+#### Output
+For each selected airport, the following files are generated:
+```text
+io/agent_report/{AIRPORT}_transit_anomaly_report.md
+io/agent_report/{AIRPORT}_agent_scored_route_day.csv
+io/agent_report/{AIRPORT}_agent_ranked_anomaly_report.csv
+io/agent_report/{AIRPORT}_agent_comparison_ready.csv
+```
+These files allow the Multi-Agent output to be inspected, ranked, and compared with the airport-specific Classical output.
+
+---
+## Classical vs Multi-Agent Comparison
+A final comparison step was added to compare the two pipelines on the same airport.
+
+The comparison uses the following key:
+```text
+date + route_airport
+```
+An anomaly is considered overlapping when both pipelines flag the same route on the same date.
+
+The comparison report includes:
+- number of rows analyzed by each pipeline
+- number of anomalies detected by each pipeline
+- number of overlapping anomalies
+- overlap rate versus the Classical pipeline
+- overlap rate versus the Multi-Agent pipeline
+
+The comparison output is saved as:
+```text
+io/agent_report/{AIRPORT}_classical_vs_agent_comparison.md
+```
