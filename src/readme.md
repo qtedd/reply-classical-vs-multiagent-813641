@@ -5,7 +5,7 @@ The objective is to identify suspicious patterns in transit flows using both a c
 
 The classical approach combines statistical models and rule-based logic, while the multi-agent system introduces modular and adaptive components. The goal is to compare these approaches in terms of performance, interpretability, and operational suitability.
 
-
+## Classical
 ### Data Preparation
 #### Passenger Dataset `TIPOLOGIA_VIAGGIATORE`
 
@@ -28,7 +28,7 @@ Additionally:
 
 ---
 
-### Cases Dataset `ALLARMI`
+#### Cases Dataset `ALLARMI`
 
 The cases dataset was cleaned with similar principles:
 
@@ -360,3 +360,35 @@ This modular structure allows:
 
 ---
 
+### Report Agent
+
+#### Role in the Multi-Agent System
+
+The Report Agent is the final component of the multi-agent anomaly detection workflow. It receives the structured outputs produced by the previous agents and converts them into a clear, human-readable **Transit Anomaly Report**.
+
+The Report Agent acts as an interpretation and communication layer. Its purpose is to explain the detected anomalies in simple operational language, making the results easier to understand for non-technical users such as airport operators, analysts, or decision-makers.
+
+The Report Agent is executed after the following agents:
+
+1. **Data Agent** – filters the data according to the selected airport perimeter.
+2. **Baseline Agent** – builds historical baseline indicators for the selected perimeter.
+3. **Outlier Detection Agent** – identifies anomalous patterns using statistical and machine learning methods.
+4. **Risk Profiling Agent** – assigns a risk level to each flagged pattern.
+5. **Report Agent** – generates the final natural-language anomaly report.
+
+---
+
+#### Input
+
+The Report Agent uses the shared LangGraph state as input. In particular, it reads:
+
+```python
+state["perimeter"]
+state["anomaly_results"]
+state["risk_profile"]
+```
+
+** The Report Agent depends on the quality of the previous agents' outputs. ** 
+If the anomaly detection or risk profiling steps contain errors, the final report may also reflect those errors. <br>
+The Report Agent does not independently verify the detected anomalies. It only explains the structured results that it receives from the previous agents.
+---
