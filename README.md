@@ -325,9 +325,9 @@ Several questions remain beyond the scope of this work:
 
 ### Setup
 
-1. Clone the repository and place the two raw CSVs in `io/`:
-   - `io/TIPOLOGIA_VIAGGIATORE.csv`
-   - `io/ALLARMI.csv`
+1. Clone the repository and place the two raw CSVs in `src/io/`:
+   - `src/io/TIPOLOGIA_VIAGGIATORE.csv`
+   - `src/io/ALLARMI.csv`
 
 2. Pull the three Ollama models:
    ```bash
